@@ -104,13 +104,7 @@ export const Dashboard: React.FC = () => {
 
       {accounts.length === 0 ? (
         <div className="bg-white p-8 rounded-lg shadow text-center">
-          <p className="text-gray-600 mb-4">You don't have any accounts yet.</p>
-          <button
-            onClick={() => navigate('/create-account')}
-            className="text-[#CC5500] hover:text-[#b34600] underline font-medium"
-          >
-            Create your first account
-          </button>
+          <p className="text-gray-600">You don't have any accounts yet. Click the button above to create one.</p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

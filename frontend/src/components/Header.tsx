@@ -11,7 +11,7 @@ export const Header: React.FC = () => {
     <header className="bg-[#CC5500] text-white shadow-lg">
       <nav className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Left side navigation */}
-        <div className="flex gap-6 items-center">
+        <div className="flex gap-12 items-center">
           <Link
             to="/"
             className={`text-lg font-semibold hover:opacity-80 transition ${isActive('/') ? 'underline' : ''}`}
