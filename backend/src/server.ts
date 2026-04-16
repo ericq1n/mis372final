@@ -9,7 +9,6 @@ import Transaction from './models/Transaction.js';
 import usersRouter from './routes/users.js';
 import accountsRouter from './routes/accounts.js';
 import transactionsRouter from './routes/transactions.js';
-import authRouter from './routes/auth.js';
 
 // Load environment variables
 dotenv.config();
@@ -45,14 +44,6 @@ async function authMiddleware(req: Request, res: Response, next: NextFunction) {
 
   const token = authHeader.slice(7).trim();
 
-  // Development: Allow test tokens for testing without Asgardeo integration
-  if (token.startsWith('test_jwt_')) {
-    // Extract userId from test token (format: test_jwt_<code>)
-    const parts = token.split('_');
-    req.userId = 'test_user_' + (parts[2] || 'dev');
-    return next();
-  }
-
   const looksLikeJwt = token && token.split('.').length === 3;
 
   if (!looksLikeJwt) {
@@ -74,10 +65,7 @@ async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-// Register public auth routes (NO auth required)
-app.use('/api/auth', authRouter);
-
-// Apply auth middleware to other /api routes
+// Apply auth middleware to /api routes
 app.use('/api/', authMiddleware);
 
 // Register protected routes

@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuthContext } from '@asgardeo/auth-react';
 
 export const Footer: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { state, signOut } = useAuthContext();
 
   return (
     <footer className="bg-[#CC5500] text-white py-6 mt-auto">
@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
               Home
             </Link>
 
-            {isAuthenticated && (
+            {state?.isAuthenticated && (
               <>
                 <Link to="/dashboard" className="hover:opacity-80 transition">
                   Dashboard
@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
                   Profile
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={() => signOut()}
                   className="hover:opacity-80 transition"
                 >
                   Logout

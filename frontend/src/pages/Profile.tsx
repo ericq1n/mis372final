@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { userService } from '../services/userService';
+import { useAuthContext } from '@asgardeo/auth-react';
+import axios from 'axios';
 import type { User } from '../services/userService';
 
 export const Profile: React.FC = () => {
-  const { userId } = useAuth();
+  const { getAccessToken } = useAuthContext();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,8 +12,16 @@ export const Profile: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        if (!userId) return;
-        const response = await userService.getUser(userId);
+        const token = await getAccessToken();
+        const userId = 'current_user';
+        const api = axios.create({
+          baseURL: import.meta.env.VITE_API_BASE_URL,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const response = await api.get<User>(`/users/${userId}`);
         setUser(response.data);
       } catch (err) {
         setError('Failed to load user profile');
@@ -24,7 +32,7 @@ export const Profile: React.FC = () => {
     };
 
     fetchUser();
-  }, [userId]);
+  }, [getAccessToken]);
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>;

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { getAccounts } from '../services/accountService';
+import { useAuthContext } from '@asgardeo/auth-react';
 import type { BankAccount } from '../services/accountService';
 import AccountCard from '../components/AccountCard';
 import { DepositModal, WithdrawModal, TransferModal } from '../components/TransactionModals';
+import axios from 'axios';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { userId } = useAuth();
+  const { state, getAccessToken } = useAuthContext();
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -22,8 +22,16 @@ export const Dashboard: React.FC = () => {
     const fetchAccounts = async () => {
       try {
         setIsLoading(true);
-        const data = await getAccounts();
-        setAccounts(data);
+        const token = await getAccessToken();
+        const api = axios.create({
+          baseURL: import.meta.env.VITE_API_BASE_URL,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const response = await api.get<BankAccount[]>('/accounts');
+        setAccounts(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load accounts');
       } finally {
@@ -31,13 +39,23 @@ export const Dashboard: React.FC = () => {
       }
     };
 
-    fetchAccounts();
-  }, []);
+    if (state?.isAuthenticated) {
+      fetchAccounts();
+    }
+  }, [state?.isAuthenticated, getAccessToken]);
 
   const handleTransactionSuccess = async () => {
     try {
-      const data = await getAccounts();
-      setAccounts(data);
+      const token = await getAccessToken();
+      const api = axios.create({
+        baseURL: import.meta.env.VITE_API_BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const response = await api.get<BankAccount[]>('/accounts');
+      setAccounts(response.data);
     } catch (err) {
       console.error('Failed to refresh accounts:', err);
     }
@@ -65,7 +83,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, {userId}!</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome!</h1>
         <p className="text-gray-600">Manage your banking accounts here.</p>
       </div>
 

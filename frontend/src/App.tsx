@@ -1,7 +1,7 @@
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useAuthContext } from '@asgardeo/auth-react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
@@ -11,27 +11,6 @@ import NotFound from './pages/NotFound';
 import './App.css';
 
 function App() {
-  const { state, signIn } = useAuthContext();
-
-  if (!state?.isAuthenticated) {
-    return (
-      <MainLayout>
-        <div className="text-center py-20">
-          <h1 className="text-4xl font-bold text-[#CC5500] mb-6">Welcome to Banking App</h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Secure, fast, and simple banking at your fingertips.
-          </p>
-          <button
-            onClick={() => signIn()}
-            className="bg-[#CC5500] hover:bg-[#b34600] text-white px-8 py-3 rounded-lg font-semibold transition"
-          >
-            Get Started
-          </button>
-        </div>
-      </MainLayout>
-    );
-  }
-
   return (
     <Routes>
       <Route
@@ -45,34 +24,46 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
+          <ProtectedRoute>
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/profile"
         element={
-          <MainLayout>
-            <Profile />
-          </MainLayout>
+          <ProtectedRoute>
+            <MainLayout>
+              <Profile />
+            </MainLayout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/create-account"
         element={
-          <MainLayout>
-            <CreateAccount />
-          </MainLayout>
+          <ProtectedRoute>
+            <MainLayout>
+              <CreateAccount />
+            </MainLayout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/accounts/:accountId"
         element={
-          <MainLayout>
-            <AccountDetail />
-          </MainLayout>
+          <ProtectedRoute>
+            <MainLayout>
+              <AccountDetail />
+            </MainLayout>
+          </ProtectedRoute>
         }
+      />
+      <Route
+        path="/auth/callback"
+        element={<Navigate to="/" replace />}
       />
       <Route
         path="*"
