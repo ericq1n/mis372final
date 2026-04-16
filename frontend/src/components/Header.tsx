@@ -1,0 +1,53 @@
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+
+export const Header: React.FC = () => {
+  const { isAuthenticated, logout } = useAuth();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
+
+  return (
+    <header className="bg-[#CC5500] text-white shadow-lg">
+      <nav className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <Link to="/" className="text-2xl font-bold">
+          🏦 Banking App
+        </Link>
+
+        <div className="flex gap-6 items-center">
+          <Link
+            to="/"
+            className={`hover:opacity-80 transition ${isActive('/') ? 'underline font-semibold' : ''}`}
+          >
+            Home
+          </Link>
+
+          {isAuthenticated && (
+            <>
+              <Link
+                to="/dashboard"
+                className={`hover:opacity-80 transition ${isActive('/dashboard') ? 'underline font-semibold' : ''}`}
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/profile"
+                className={`hover:opacity-80 transition ${isActive('/profile') ? 'underline font-semibold' : ''}`}
+              >
+                Profile
+              </Link>
+              <button
+                onClick={logout}
+                className="bg-white text-[#CC5500] px-4 py-2 rounded font-semibold hover:bg-opacity-90 transition"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      </nav>
+    </header>
+  );
+};
+
+export default Header;
