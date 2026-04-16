@@ -1,8 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuthContext } from '@asgardeo/auth-react';
 
 export const Header: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { state, signOut } = useAuthContext();
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
@@ -22,7 +22,7 @@ export const Header: React.FC = () => {
             Home
           </Link>
 
-          {isAuthenticated && (
+          {state?.isAuthenticated && (
             <>
               <Link
                 to="/dashboard"
@@ -37,7 +37,7 @@ export const Header: React.FC = () => {
                 Profile
               </Link>
               <button
-                onClick={logout}
+                onClick={() => signOut()}
                 className="bg-white text-[#CC5500] px-4 py-2 rounded font-semibold hover:bg-opacity-90 transition"
               >
                 Logout

@@ -12,6 +12,27 @@ export interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// PKCE helpers
+function generateRandomString(length: number): string {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return result;
+}
+
+async function generateCodeChallenge(codeVerifier: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(codeVerifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+  return base64;
+}
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setTokenState] = useState<string | null>(null);
@@ -29,13 +50,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
-  const login = () => {
-    const clientId = import.meta.env.VITE_ASGARDEO_CLIENT_ID;
-    const redirectUri = import.meta.env.VITE_ASGARDEO_REDIRECT_URI;
-    const org = import.meta.env.VITE_ASGARDEO_ORG;
-    
-    const asgardeoLoginUrl = `https://api.asgardeo.io/t/${org}/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=openid%20profile%20email`;
-    window.location.href = asgardeoLoginUrl;
+  const login = async () => {
+    try {
+      const clientId = import.meta.env.VITE_ASGARDEO_CLIENT_ID;
+      const redirectUri = import.meta.env.VITE_ASGARDEO_REDIRECT_URI;
+      const org = import.meta.env.VITE_ASGARDEO_ORG;
+
+      // Generate PKCE parameters
+      const codeVerifier = generateRandomString(128);
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+      const nonce = generateRandomString(32);
+
+      // Store for later use in callback
+      sessionStorage.setItem('pkce_code_verifier', codeVerifier);
+      sessionStorage.setItem('nonce', nonce);
+
+      // Build authorization URL with PKCE
+      const asgardeoLoginUrl = new URL(
+        `https://api.asgardeo.io/t/${org}/oauth2/authorize`
+      );
+      asgardeoLoginUrl.searchParams.set('response_type', 'code');
+      asgardeoLoginUrl.searchParams.set('client_id', clientId);
+      asgardeoLoginUrl.searchParams.set('redirect_uri', redirectUri);
+      asgardeoLoginUrl.searchParams.set('scope', 'openid profile email');
+      asgardeoLoginUrl.searchParams.set('code_challenge', codeChallenge);
+      asgardeoLoginUrl.searchParams.set('code_challenge_method', 'S256');
+      asgardeoLoginUrl.searchParams.set('nonce', nonce);
+
+      window.location.href = asgardeoLoginUrl.toString();
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Failed to initiate login. Check browser console.');
+    }
   };
 
   const logout = () => {
