@@ -34,6 +34,7 @@ router.post('/', async (req: Request, res: Response) => {
       accountName: accountName || undefined,
       accountType,
       balance: 0,
+      apy: accountType === 'savings' ? 3 : 0,
       active: true,
     });
 

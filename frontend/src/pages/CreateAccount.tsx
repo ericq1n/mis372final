@@ -1,13 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@asgardeo/auth-react';
 import { createAccount } from '../services/accountService';
+import { setTokenGetter } from '../services/api';
 
 export const CreateAccount: React.FC = () => {
   const navigate = useNavigate();
+  const { getAccessToken } = useAuthContext();
   const [accountType, setAccountType] = useState<'checking' | 'savings'>('checking');
   const [accountName, setAccountName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Set up token getter when component mounts
+  useEffect(() => {
+    setTokenGetter(getAccessToken);
+  }, [getAccessToken]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
