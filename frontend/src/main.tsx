@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from '@asgardeo/auth-react'
 import './index.css'
 import App from './App.tsx'
+import ApiAuthBridge from './components/ApiAuthBridge'
+import { CurrentUserProvider } from './context/CurrentUserContext'
 
 const config = {
   clientID: import.meta.env.VITE_ASGARDEO_CLIENT_ID,
@@ -17,7 +19,10 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider config={config}>
-        <App />
+        <ApiAuthBridge />
+        <CurrentUserProvider>
+          <App />
+        </CurrentUserProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>

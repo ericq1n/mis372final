@@ -16,6 +16,27 @@ export function validateAccountType(type: unknown): boolean {
   return type === 'checking' || type === 'savings';
 }
 
+// US phone: accept 10 digits, optionally formatted. Normalized by caller.
+export function validatePhone(phone: unknown): boolean {
+  if (typeof phone !== 'string') return false;
+  const digits = phone.replace(/\D/g, '');
+  return digits.length === 10;
+}
+
+// US zip: 5 digits or ZIP+4 (5-4).
+export function validateZipCode(zip: unknown): boolean {
+  if (typeof zip !== 'string') return false;
+  return /^\d{5}(-\d{4})?$/.test(zip.trim());
+}
+
+// Date of birth: must parse to a real date in the past.
+export function validateDateOfBirth(dob: unknown): boolean {
+  if (typeof dob !== 'string' || dob.trim() === '') return false;
+  const d = new Date(dob);
+  if (Number.isNaN(d.getTime())) return false;
+  return d.getTime() < Date.now();
+}
+
 export function validateState(state: unknown): boolean {
   const states = [
     'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',

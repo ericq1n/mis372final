@@ -1,38 +1,16 @@
-import { Link } from 'react-router-dom';
-import { useAuthContext } from '@asgardeo/auth-react';
-
 export const Footer: React.FC = () => {
-  const { state, signOut } = useAuthContext();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#CC5500] text-white py-6 mt-auto">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center">
-          <div className="text-sm">&copy; 2026 Banking App. All rights reserved.</div>
-
-          <div className="flex gap-6">
-            <Link to="/" className="hover:opacity-80 transition">
-              Home
-            </Link>
-
-            {state?.isAuthenticated && (
-              <>
-                <Link to="/dashboard" className="hover:opacity-80 transition">
-                  Dashboard
-                </Link>
-                <Link to="/profile" className="hover:opacity-80 transition">
-                  Profile
-                </Link>
-                <button
-                  onClick={() => signOut()}
-                  className="hover:opacity-80 transition"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+    <footer className="bg-gray-900 text-gray-300 py-4 mt-auto">
+      <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+        <span className="font-semibold text-white">LonghornBank</span>
+        <a href="#privacy" className="hover:text-white transition">Privacy</a>
+        <a href="#terms" className="hover:text-white transition">Terms</a>
+        <a href="#support" className="hover:text-white transition">Support</a>
+        <span className="ml-auto text-gray-400">
+          &copy; {year} LonghornBank. All rights reserved.
+        </span>
       </div>
     </footer>
   );

@@ -1,57 +1,60 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@asgardeo/auth-react';
+import { useCurrentUser } from '../context/CurrentUserContext';
+import Avatar from './Avatar';
+
+const linkBase = 'text-sm font-medium text-white/90 hover:text-white transition';
+const linkActive = 'text-white underline underline-offset-4';
 
 export const Header: React.FC = () => {
-  const { state, signOut, signIn } = useAuthContext();
-  const location = useLocation();
+  const { state, signIn } = useAuthContext();
+  const { user } = useCurrentUser();
+  const navigate = useNavigate();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isAuthed = !!state?.isAuthenticated;
 
   return (
-    <header className="bg-[#CC5500] text-white shadow-lg">
-      <nav className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Left side navigation */}
-        <div className="flex gap-12 items-center">
-          <Link
-            to="/"
-            className={`text-lg font-semibold hover:opacity-80 transition ${isActive('/') ? 'underline' : ''}`}
-          >
-            Home
-          </Link>
+    <header className="bg-[#CC5500] text-white shadow-sm">
+      <nav className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        {/* Brand */}
+        <Link to={isAuthed ? '/dashboard' : '/'} className="flex items-center gap-2">
+          <span className="text-base font-bold tracking-tight">LonghornBank</span>
+        </Link>
 
-          {state?.isAuthenticated && (
-            <Link
-              to="/dashboard"
-              className={`text-lg font-semibold hover:opacity-80 transition ${isActive('/dashboard') ? 'underline' : ''}`}
+        {/* Navigation */}
+        <div className="flex items-center gap-6">
+          {!isAuthed && (
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ''}`}
             >
-              MyBanking
-            </Link>
+              Home
+            </NavLink>
           )}
-        </div>
 
-        {/* Right side navigation */}
-        <div className="flex gap-4 items-center">
-          {state?.isAuthenticated ? (
-            <>
-              <Link
-                to="/profile"
-                className={`hover:opacity-80 transition ${isActive('/profile') ? 'underline font-semibold' : ''}`}
-              >
-                Profile
-              </Link>
-              <button
-                onClick={() => signOut()}
-                className="bg-white text-[#CC5500] px-4 py-2 rounded font-semibold hover:bg-opacity-90 transition"
-              >
-                Logout
-              </button>
-            </>
+          {isAuthed && (
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ''}`}
+            >
+              My Banking
+            </NavLink>
+          )}
+
+          {isAuthed ? (
+            <Avatar
+              firstName={user?.firstName}
+              lastName={user?.lastName}
+              onClick={() => navigate('/profile')}
+            />
           ) : (
             <button
+              type="button"
               onClick={() => signIn()}
-              className="bg-white text-[#CC5500] px-4 py-2 rounded font-semibold hover:bg-opacity-90 transition"
+              className="bg-white text-[#CC5500] hover:bg-white/90 transition px-3 py-1.5 rounded-md text-sm font-semibold"
             >
-              Login
+              Log In
             </button>
           )}
         </div>

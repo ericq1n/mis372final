@@ -48,6 +48,12 @@ export async function updateAccount(
   return response.data;
 }
 
+// Soft-close: flip active=false. Backend keeps the row for historical
+// transactions. Caller must ensure balance is zero before calling.
+export async function closeAccount(accountId: string): Promise<BankAccount> {
+  return updateAccount(accountId, { active: false });
+}
+
 export async function getAccountTransactions(accountId: string): Promise<Transaction[]> {
   const response = await axiosInstance.get<Transaction[]>(`/accounts/${accountId}/transactions`);
   return response.data;

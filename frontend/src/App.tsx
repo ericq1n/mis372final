@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import CompleteProfile from './pages/CompleteProfile';
 import CreateAccount from './pages/CreateAccount';
 import AccountDetail from './pages/AccountDetail';
 import NotFound from './pages/NotFound';
@@ -16,7 +17,7 @@ function App() {
       <Route
         path="/"
         element={
-          <MainLayout>
+          <MainLayout fullBleed>
             <Home />
           </MainLayout>
         }
@@ -37,6 +38,16 @@ function App() {
           <ProtectedRoute>
             <MainLayout>
               <Profile />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/complete-profile"
+        element={
+          <ProtectedRoute allowIncompleteProfile>
+            <MainLayout>
+              <CompleteProfile />
             </MainLayout>
           </ProtectedRoute>
         }
@@ -63,7 +74,7 @@ function App() {
       />
       <Route
         path="/auth/callback"
-        element={<Navigate to="/" replace />}
+        element={<Navigate to="/dashboard" replace />}
       />
       <Route
         path="*"
