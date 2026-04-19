@@ -1,48 +1,61 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@asgardeo/auth-react';
+import { useCurrentUser } from '../context/CurrentUserContext';
+import Avatar from './Avatar';
+
+const linkBase = 'text-sm font-medium text-white/90 hover:text-white transition';
+const linkActive = 'text-white underline underline-offset-4';
 
 export const Header: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
-  const location = useLocation();
+  const { state, signIn } = useAuthContext();
+  const { user } = useCurrentUser();
+  const navigate = useNavigate();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isAuthed = !!state?.isAuthenticated;
 
   return (
-    <header className="bg-[#CC5500] text-white shadow-lg">
-      <nav className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold">
-          🏦 Banking App
+    <header className="bg-[#CC5500] text-white shadow-sm">
+      <nav className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        {/* Brand */}
+        <Link to={isAuthed ? '/dashboard' : '/'} className="flex items-center gap-2">
+          <span className="text-base font-bold tracking-tight">LonghornBank</span>
         </Link>
 
-        <div className="flex gap-6 items-center">
-          <Link
-            to="/"
-            className={`hover:opacity-80 transition ${isActive('/') ? 'underline font-semibold' : ''}`}
-          >
-            Home
-          </Link>
+        {/* Navigation */}
+        <div className="flex items-center gap-6">
+          {!isAuthed && (
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ''}`}
+            >
+              Home
+            </NavLink>
+          )}
 
-          {isAuthenticated && (
-            <>
-              <Link
-                to="/dashboard"
-                className={`hover:opacity-80 transition ${isActive('/dashboard') ? 'underline font-semibold' : ''}`}
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="/profile"
-                className={`hover:opacity-80 transition ${isActive('/profile') ? 'underline font-semibold' : ''}`}
-              >
-                Profile
-              </Link>
-              <button
-                onClick={logout}
-                className="bg-white text-[#CC5500] px-4 py-2 rounded font-semibold hover:bg-opacity-90 transition"
-              >
-                Logout
-              </button>
-            </>
+          {isAuthed && (
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ''}`}
+            >
+              My Banking
+            </NavLink>
+          )}
+
+          {isAuthed ? (
+            <Avatar
+              firstName={user?.firstName}
+              lastName={user?.lastName}
+              onClick={() => navigate('/profile')}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => signIn()}
+              className="bg-white text-[#CC5500] hover:bg-white/90 transition px-3 py-1.5 rounded-md text-sm font-semibold"
+            >
+              Log In
+            </button>
           )}
         </div>
       </nav>

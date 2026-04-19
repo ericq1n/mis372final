@@ -49,7 +49,7 @@ async function authMiddleware(req, res, next) {
 }
 // Apply auth middleware to /api routes
 app.use('/api/', authMiddleware);
-// Register routes
+// Register protected routes
 app.use('/api/users', usersRouter);
 app.use('/api/accounts', accountsRouter);
 app.use('/api/transactions', transactionsRouter);

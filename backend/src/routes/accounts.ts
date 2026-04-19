@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import { Op } from 'sequelize';
 import BankAccount from '../models/BankAccount.js';
 import Transaction from '../models/Transaction.js';
-import User from '../models/User.js';
 import { validateAccountType } from '../utils/validators.js';
 import { generateAccountNumber } from '../utils/sequenceGenerator.js';
 
@@ -18,13 +17,7 @@ router.post('/', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'accountType must be "checking" or "savings"' });
     }
 
-    // Check if user exists
-    const user = await User.findByPk(req.userId!);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Generate account number
+    // Generate account number (User row is guaranteed to exist by ensureUserMiddleware)
     const accountNumber = await generateAccountNumber(accountType);
 
     // Create account
@@ -34,6 +27,7 @@ router.post('/', async (req: Request, res: Response) => {
       accountName: accountName || undefined,
       accountType,
       balance: 0,
+      apy: accountType === 'savings' ? 3 : 0,
       active: true,
     });
 

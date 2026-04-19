@@ -28,6 +28,7 @@ router.post('/', async (req, res) => {
             accountName: accountName || undefined,
             accountType,
             balance: 0,
+            apy: accountType === 'savings' ? 3 : 0,
             active: true,
         });
         res.status(201).json({ accountId: account.accountId, accountNumber: account.accountNumber });

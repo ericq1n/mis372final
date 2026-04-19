@@ -9,26 +9,37 @@ const axiosInstance = axios.create({
   },
 });
 
-// Request interceptor to add Bearer token
+// Token getter is supplied from a component inside the AuthProvider tree.
+// Kept as a module-level reference so every call through axiosInstance
+// automatically attaches a fresh bearer token.
+let getAccessTokenFn: (() => Promise<string>) | null = null;
+
+export function setTokenGetter(fn: () => Promise<string>) {
+  getAccessTokenFn = fn;
+}
+
 axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = sessionStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    try {
+      if (getAccessTokenFn) {
+        const token = await getAccessTokenFn();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+    } catch (error) {
+      console.error('Error getting access token:', error);
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle 401 errors
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      sessionStorage.removeItem('authToken');
-      sessionStorage.removeItem('userId');
-      window.location.href = '/login';
+      window.location.href = '/';
     }
     return Promise.reject(error);
   }
