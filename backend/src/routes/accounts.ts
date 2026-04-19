@@ -61,6 +61,7 @@ router.get('/:accountId', async (req: Request, res: Response) => {
 
     // Row-level security
     if (account.userId !== req.userId) {
+      console.warn(`Forbidden access attempt: account=${account.accountId} owner=${account.userId} requester=${req.userId}`);
       return res.status(403).json({ error: 'Forbidden: Cannot access other user account' });
     }
 
@@ -80,6 +81,7 @@ router.put('/:accountId', async (req: Request, res: Response) => {
 
     // Row-level security
     if (account.userId !== req.userId!) {
+      console.warn(`Forbidden update attempt: account=${account.accountId} owner=${account.userId} requester=${req.userId}`);
       return res.status(403).json({ error: 'Forbidden: Cannot update other user account' });
     }
 
@@ -112,6 +114,7 @@ router.get('/:accountId/transactions', async (req: Request, res: Response) => {
 
     // Row-level security
     if (account.userId !== req.userId!) {
+      console.warn(`Forbidden transactions access: account=${account.accountId} owner=${account.userId} requester=${req.userId}`);
       return res.status(403).json({ error: 'Forbidden: Cannot access other user account' });
     }
 
