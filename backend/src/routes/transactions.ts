@@ -92,9 +92,12 @@ router.post('/', async (req: Request, res: Response) => {
         await fromAccount.save();
       }
 
-      const toBalance = parseFloat(toAccount.balance.toString());
-      toAccount.balance = parseFloat((toBalance + amount).toFixed(2));
-      await toAccount.save();
+       // Credit destination account for deposits and transfers only
+      if (transaction.type === 'deposit' || transaction.type === 'transfer') {
+        const toBalance = parseFloat(toAccount.balance.toString());
+        toAccount.balance = parseFloat((toBalance + amount).toFixed(2));
+        await toAccount.save();
+      }
     }
 
     res.status(201).json({ transactionId: transaction.transactionId, timestamp: transaction.createdAt });
