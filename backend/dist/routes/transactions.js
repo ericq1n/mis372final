@@ -77,9 +77,11 @@ router.post('/', async (req, res) => {
                 fromAccount.balance = parseFloat((fromBalance - amount).toFixed(2));
                 await fromAccount.save();
             }
-            const toBalance = parseFloat(toAccount.balance.toString());
-            toAccount.balance = parseFloat((toBalance + amount).toFixed(2));
-            await toAccount.save();
+            if (transaction.type === 'deposit' || transaction.type === 'transfer') {
+                const toBalance = parseFloat(toAccount.balance.toString());
+                toAccount.balance = parseFloat((toBalance + amount).toFixed(2));
+                await toAccount.save();
+            }
         }
         res.status(201).json({ transactionId: transaction.transactionId, timestamp: transaction.createdAt });
     }

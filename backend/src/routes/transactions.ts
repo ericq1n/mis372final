@@ -86,20 +86,12 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Update balances if transaction is completed
     if (transactionStatus === 'completed') {
-      // Credit destination account for deposits and transfers only
-      if (transaction.type === 'withdrawal') {
-        const fromBalance = parseFloat(fromAccount.balance.toString());
-        fromAccount.balance = parseFloat((fromBalance - amount).toFixed(2));
-        await fromAccount.save();
-      }
-      else if (fromAccount) {
+      if (fromAccount) {
         const fromBalance = parseFloat(fromAccount.balance.toString());
         fromAccount.balance = parseFloat((fromBalance - amount).toFixed(2));
         await fromAccount.save();
       }
 
-
-      // Credit destination account for deposits and transfers only
       if (transaction.type === 'deposit' || transaction.type === 'transfer') {
         const toBalance = parseFloat(toAccount.balance.toString());
         toAccount.balance = parseFloat((toBalance + amount).toFixed(2));
