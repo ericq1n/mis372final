@@ -113,7 +113,6 @@ router.put('/me', async (req: Request, res: Response) => {
 router.get('/:userId', async (req: Request, res: Response) => {
   try {
     if (req.userId !== req.params.userId) {
-      console.warn(`Forbidden user lookup: target=${req.params.userId} requester=${req.userId}`);
       return res.status(403).json({ error: 'Forbidden: Cannot access other user data' });
     }
 
@@ -132,7 +131,6 @@ router.get('/:userId', async (req: Request, res: Response) => {
 router.put('/:userId', async (req: Request, res: Response) => {
   try {
     if (req.userId !== req.params.userId) {
-      console.warn(`Forbidden user update: target=${req.params.userId} requester=${req.userId}`);
       return res.status(403).json({ error: 'Forbidden: Cannot update other user data' });
     }
 

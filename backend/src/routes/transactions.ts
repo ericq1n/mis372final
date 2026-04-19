@@ -41,7 +41,6 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Row-level security: destination account must belong to user or be accessible
     if (toAccount.userId !== req.userId && type !== 'transfer') {
-      console.warn(`Forbidden transaction destination: toAccount=${toAccount.accountId} owner=${toAccount.userId} requester=${req.userId} type=${type}`);
       return res.status(403).json({ error: 'Forbidden: Cannot access destination account' });
     }
 
@@ -61,7 +60,6 @@ router.post('/', async (req: Request, res: Response) => {
 
       // Row-level security
       if (fromAccount.userId !== req.userId) {
-        console.warn(`Forbidden transaction source: fromAccount=${fromAccount.accountId} owner=${fromAccount.userId} requester=${req.userId} type=${type}`);
         return res.status(403).json({ error: 'Forbidden: Cannot access source account' });
       }
 
@@ -88,19 +86,15 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Update balances if transaction is completed
     if (transactionStatus === 'completed') {
-      // Debit source account when present (withdrawal or transfer)
       if (fromAccount) {
         const fromBalance = parseFloat(fromAccount.balance.toString());
         fromAccount.balance = parseFloat((fromBalance - amount).toFixed(2));
         await fromAccount.save();
       }
 
-      // Credit destination account for deposits and transfers only
-      if (transaction.type === 'deposit' || transaction.type === 'transfer') {
-        const toBalance = parseFloat(toAccount.balance.toString());
-        toAccount.balance = parseFloat((toBalance + amount).toFixed(2));
-        await toAccount.save();
-      }
+      const toBalance = parseFloat(toAccount.balance.toString());
+      toAccount.balance = parseFloat((toBalance + amount).toFixed(2));
+      await toAccount.save();
     }
 
     res.status(201).json({ transactionId: transaction.transactionId, timestamp: transaction.createdAt });
