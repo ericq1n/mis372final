@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
     <header className="bg-[#CC5500] text-white shadow-sm">
       <nav className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Brand */}
-        <Link to={isAuthed ? '/dashboard' : '/'} className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <span className="text-base font-bold tracking-tight">LonghornBank</span>
         </Link>
 

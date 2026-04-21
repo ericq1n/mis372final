@@ -29,7 +29,8 @@ function formatDate(d: string): string {
 
 function tabLabel(a: BankAccount): string {
   if (a.accountName) return a.accountName;
-  return a.accountType === 'savings' ? 'Savings' : 'Checking';
+  const typeLabel = a.accountType === 'savings' ? 'Savings Account' : 'Checking Account';
+  return `${typeLabel} ${a.accountNumber}`;
 }
 
 export const RecentTransactions: React.FC<RecentTransactionsProps> = ({

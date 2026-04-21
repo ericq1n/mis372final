@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@asgardeo/auth-react';
+import { useEffect } from 'react';
 
 interface Feature {
   title: string;
@@ -42,6 +43,31 @@ export const Home: React.FC = () => {
   const navigate = useNavigate();
   const { state, signIn } = useAuthContext();
   const isAuthed = !!state?.isAuthenticated;
+
+  // Strata Chat Widget Integration
+  useEffect(() => {
+    // Inject script directly to DOM
+    const script = document.createElement('script');
+    script.src = "https://strata.fyi/widget.js";
+    script.defer = true;
+    script.id = "strata-widget-script"; // ID makes it easy to find later
+    document.body.appendChild(script);
+    const chatElement = document.createElement('strata-chat');
+    chatElement.setAttribute('workspace', 'longhornbanking');
+    chatElement.setAttribute('icon-url', 'https://giving.utexas.edu/wp-content/uploads/2022/01/0_Texas-Longhorns-01.png');
+    chatElement.setAttribute('chat-title', 'Longhorn Banking');
+    chatElement.id = "strata-widget-ui";
+    document.body.appendChild(chatElement);
+
+    // CLEANUP FUNCTION: Runs when the user leaves the Home page
+    return () => {
+      const existingScript = document.getElementById('strata-widget-script');
+      const existingUI = document.getElementById('strata-widget-ui');
+      
+      if (existingScript) existingScript.remove();
+      if (existingUI) existingUI.remove();
+    };
+  }, []);
 
   return (
     <div>
