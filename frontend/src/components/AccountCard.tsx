@@ -107,6 +107,9 @@ export const AccountCard: React.FC<AccountCardProps> = ({
           <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
             {typeLabel}
           </p>
+          <p className="mt-1 text-sm text-gray-600">
+            {account.accountName || `${typeLabel} ${account.accountNumber}`}
+          </p>
           <p className="mt-1 text-2xl font-bold text-gray-900">${balance}</p>
         </div>
         <span
