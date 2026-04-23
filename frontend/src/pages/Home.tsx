@@ -30,7 +30,7 @@ const features: Feature[] = [
   },
   {
     title: 'Savings APY growth',
-    description: 'Simulate monthly interest growth and watch your balance build.',
+    description: 'Simulate monthly interest growth and watch your balance build with 3.00% APY.',
     glyph: (
       <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" stroke="currentColor" strokeWidth="1.8">
         <path d="M12 3v18M8 7h6a3 3 0 010 6H8m0 0h7a3 3 0 010 6H7" strokeLinecap="round" strokeLinejoin="round" />
