@@ -23,13 +23,17 @@ export const CurrentUserProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const refresh = useCallback(async () => {
     if (!state?.isAuthenticated) {
       setUser(null);
       return;
     }
-    setIsLoading(true);
+    // Only show loading state on initial load, not on background refresh
+    if (isInitialLoad) {
+      setIsLoading(true);
+    }
     setError(null);
     try {
       const resp = await userService.getMe();
@@ -38,9 +42,12 @@ export const CurrentUserProvider: React.FC<{ children: ReactNode }> = ({ childre
       setError(err instanceof Error ? err.message : 'Failed to load user');
       setUser(null);
     } finally {
-      setIsLoading(false);
+      if (isInitialLoad) {
+        setIsLoading(false);
+        setIsInitialLoad(false);
+      }
     }
-  }, [state?.isAuthenticated]);
+  }, [state?.isAuthenticated, isInitialLoad]);
 
   // Re-fetch whenever auth state flips. The dependency on `refresh`
   // is enough — it closes over isAuthenticated.

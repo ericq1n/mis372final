@@ -4,6 +4,9 @@ import { useCurrentUser } from '../context/CurrentUserContext';
 import { userService } from '../services/userService';
 import Avatar from '../components/Avatar';
 
+// Auto-dismiss success messages after 5 seconds
+const AUTO_DISMISS_DELAY = 5000;
+
 const US_STATES = [
   'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
   'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
@@ -91,8 +94,11 @@ export const Profile: React.FC = () => {
         zipCode: form.zipCode.trim() || undefined,
         dateOfBirth: form.dateOfBirth || undefined,
       });
-      await refresh();
-      setMessage({ tone: 'ok', text: 'Profile saved' });
+      setMessage({ tone: 'ok', text: 'Changes successfully saved' });
+      // Auto-dismiss success message after 5 seconds
+      setTimeout(() => setMessage(null), AUTO_DISMISS_DELAY);
+      // Refresh in background without blocking UI
+      refresh();
     } catch (err) {
       const apiMessage =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
@@ -113,6 +119,18 @@ export const Profile: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {message && (
+        <div
+          className={`mb-4 text-sm rounded-md px-3 py-2 border animate-in fade-in ${
+            message.tone === 'ok'
+              ? 'bg-green-50 text-green-700 border-green-200'
+              : 'bg-red-50 text-red-700 border-red-200'
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
+
       <button
         onClick={() => history.back()}
         className="mb-4 text-[#CC5500] hover:text-[#b34600] text-sm font-medium"
@@ -127,18 +145,6 @@ export const Profile: React.FC = () => {
           <p className="text-sm text-gray-500">{memberSince(user.dateOfBirth ?? undefined)}</p>
         </div>
       </div>
-
-      {message && (
-        <div
-          className={`mb-4 text-sm rounded-md px-3 py-2 border ${
-            message.tone === 'ok'
-              ? 'bg-green-50 text-green-700 border-green-200'
-              : 'bg-red-50 text-red-700 border-red-200'
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
 
       {/* Personal information */}
       <section className="bg-white border border-gray-200 rounded-xl shadow-sm mb-5">
