@@ -47,6 +47,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [toAccountId, setToAccountId] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -78,7 +79,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       setAmount('');
       setToAccountId('');
       await onSuccess();
-      onClose();
+      setSuccess(true);
+      // Close modal after showing success message
+      setTimeout(() => {
+        setSuccess(false);
+        onClose();
+      }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Transfer failed');
     } finally {
@@ -131,6 +137,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       />
 
       {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+
+      {success && (
+        <div className="bg-green-50 text-green-700 border border-green-200 rounded-md px-3 py-2 text-sm mb-3">
+          ✓ Transfer successful
+        </div>
+      )}
 
       <div className="flex gap-2 pt-2">
         <button
