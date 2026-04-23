@@ -100,18 +100,32 @@ async function ensureUserMiddleware(req: Request, res: Response, next: NextFunct
     const firstName =
       (typeof info.given_name === 'string' && info.given_name) ||
       (typeof info.name === 'string' && (info.name as string).split(' ')[0]) ||
-      'User';
+      '';
 
     const lastName =
       (typeof info.family_name === 'string' && info.family_name) ||
       (typeof info.name === 'string' && (info.name as string).split(' ').slice(1).join(' ')) ||
       '';
 
+    let phone: string | undefined;
+    const rawPhone =
+      (typeof info.phone_number === 'string' && info.phone_number) || '';
+    if (rawPhone) {
+      let digits = rawPhone.replace(/\D/g, '');
+      if (digits.length === 11 && digits.startsWith('1')) {
+        digits = digits.slice(1);
+      }
+      if (digits.length === 10) {
+        phone = digits;
+      }
+    }
+
     await User.create({
       userId: req.userId!,
       email,
       firstName,
       lastName: lastName || 'Unknown',
+      phone,
       active: true,
     });
 

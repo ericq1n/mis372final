@@ -12,7 +12,7 @@ const config = {
   baseUrl: `https://api.asgardeo.io/t/${import.meta.env.VITE_ASGARDEO_ORG}`,
   signInRedirectURL: import.meta.env.VITE_ASGARDEO_REDIRECT_URI,
   signOutRedirectURL: import.meta.env.VITE_ASGARDEO_REDIRECT_URI,
-  scope: ['openid', 'profile', 'email'],
+  scope: ['openid', 'profile', 'email', 'phone'],
 };
 
 createRoot(document.getElementById('root')!).render(
