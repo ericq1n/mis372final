@@ -114,7 +114,7 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, report, mont
                     <XAxis dataKey="name" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
                     <YAxis tickFormatter={fmtAxis} tick={{ fontSize: 10 }} axisLine={false} tickLine={false} width={44} />
                     <Tooltip
-                      formatter={(value: number) => [fmtDollar(value), '']}
+                      formatter={(value) => [fmtDollar(Number(value ?? 0)), '']}
                       cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                       contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #e5e7eb' }}
                     />
@@ -147,8 +147,8 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, report, mont
                         cx="50%"
                         cy="46%"
                         outerRadius={58}
-                        label={({ percent }: { percent: number }) =>
-                          percent > 0.05 ? `${(percent * 100).toFixed(0)}%` : ''
+                        label={({ percent }: { percent?: number }) =>
+                          (percent ?? 0) > 0.05 ? `${((percent ?? 0) * 100).toFixed(0)}%` : ''
                         }
                         labelLine={false}
                       >
@@ -157,7 +157,7 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, report, mont
                         ))}
                       </Pie>
                       <Tooltip
-                        formatter={(value: number) => [fmtDollar(value), '']}
+                        formatter={(value) => [fmtDollar(Number(value ?? 0)), '']}
                         contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #e5e7eb' }}
                       />
                       <Legend
