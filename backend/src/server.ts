@@ -9,6 +9,8 @@ import Transaction from './models/Transaction.js';
 import usersRouter from './routes/users.js';
 import accountsRouter from './routes/accounts.js';
 import transactionsRouter from './routes/transactions.js';
+import aiRouter from './routes/ai.js';
+import AiReport from './models/AiReport.js';
 
 // Load environment variables
 dotenv.config();
@@ -147,6 +149,7 @@ app.use('/api/', ensureUserMiddleware);
 app.use('/api/users', usersRouter);
 app.use('/api/accounts', accountsRouter);
 app.use('/api/transactions', transactionsRouter);
+app.use('/api/ai', aiRouter);
 
 // Initialize database and start server
 async function startServer() {
@@ -159,6 +162,8 @@ async function startServer() {
     BankAccount.belongsTo(User, { foreignKey: 'userId' });
     Transaction.belongsTo(BankAccount, { foreignKey: 'accountFromId', as: 'fromAccount' });
     Transaction.belongsTo(BankAccount, { foreignKey: 'accountToId', as: 'toAccount' });
+    AiReport.belongsTo(User, { foreignKey: 'userId' });
+    User.hasMany(AiReport, { foreignKey: 'userId' });
 
     // Sync models with database
     await sequelize.sync({ alter: true });

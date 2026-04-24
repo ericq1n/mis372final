@@ -114,12 +114,20 @@ export const Dashboard: React.FC = () => {
             Here's a summary of your accounts as of today.
           </p>
         </div>
-        <button
-          onClick={() => navigate('/create-account')}
-          className="bg-white border border-gray-300 text-gray-800 hover:bg-gray-50 transition px-4 py-2 rounded-md text-sm font-medium shadow-sm"
-        >
-          + Create bank account
-        </button>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => navigate('/ai-health')}
+            className="bg-[#CC5500] hover:bg-[#b34600] text-white transition px-4 py-2 rounded-md text-sm font-medium shadow-sm"
+          >
+            AI Financial Health
+          </button>
+          <button
+            onClick={() => navigate('/create-account')}
+            className="bg-white border border-gray-300 text-gray-800 hover:bg-gray-50 transition px-4 py-2 rounded-md text-sm font-medium shadow-sm"
+          >
+            + Create bank account
+          </button>
+        </div>
       </div>
 
       {error && (

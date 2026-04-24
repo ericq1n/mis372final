@@ -174,7 +174,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
           {isSavings && apyDisplay && onSimulateMonth && (
             <div className="mt-4 flex items-center justify-between text-sm">
               <span className="text-gray-600">
-                APY: <span className="font-semibold text-[#CC5500]">{apyDisplay}</span> — simulate growth
+                APY: <span className="font-semibold text-[#CC5500]">{apyDisplay}</span> — simulate time progression for interest
               </span>
               <button
                 onClick={handleSimulateMonth}

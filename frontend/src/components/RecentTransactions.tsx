@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { BankAccount } from '../services/accountService';
 import type { Transaction } from '../services/transactionService';
 
@@ -44,33 +44,30 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
     initialAccountId ?? accounts[0]?.accountId
   );
 
-  // Keep the selected tab valid when the account list changes (e.g. account closed).
-  useEffect(() => {
-    if (accounts.length === 0) {
-      setSelectedId(undefined);
-      return;
-    }
-    if (!selectedId || !accounts.some((a) => a.accountId === selectedId)) {
-      setSelectedId(accounts[0].accountId);
-    }
+  // Derive a safe effective tab without calling setState inside an effect.
+  // Falls back to the first account whenever the stored id is stale or the list is empty.
+  const effectiveSelectedId = useMemo<string | undefined>(() => {
+    if (accounts.length === 0) return undefined;
+    if (selectedId && accounts.some((a) => a.accountId === selectedId)) return selectedId;
+    return accounts[0]?.accountId;
   }, [accounts, selectedId]);
 
   const rows = useMemo(() => {
-    if (!selectedId) return [];
+    if (!effectiveSelectedId) return [];
     return transactions
-      .filter((t) => t.accountFromId === selectedId || t.accountToId === selectedId)
+      .filter((t) => t.accountFromId === effectiveSelectedId || t.accountToId === effectiveSelectedId)
       .slice(0, limit);
-  }, [transactions, selectedId, limit]);
+  }, [transactions, effectiveSelectedId, limit]);
 
-  const selectedAccount = accounts.find((a) => a.accountId === selectedId);
+  const selectedAccount = accounts.find((a) => a.accountId === effectiveSelectedId);
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
       <div className="flex items-center justify-between px-5 pt-3">
         <h3 className="text-sm font-semibold text-gray-900">Recent transactions</h3>
-        {onViewAll && selectedId && rows.length > 0 && (
+        {onViewAll && effectiveSelectedId && rows.length > 0 && (
           <button
-            onClick={() => onViewAll(selectedId)}
+            onClick={() => onViewAll(effectiveSelectedId)}
             className="text-sm text-[#CC5500] hover:text-[#b34600] font-medium transition"
           >
             View all
@@ -86,7 +83,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
           className="flex gap-1 px-5 pt-3 pb-2 border-b border-gray-100 overflow-x-auto"
         >
           {accounts.map((a) => {
-            const isActive = a.accountId === selectedId;
+            const isActive = a.accountId === effectiveSelectedId;
             return (
               <button
                 key={a.accountId}
@@ -122,7 +119,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
       ) : (
         <ul className="divide-y divide-gray-100">
           {rows.map((t) => {
-            const { text, negative } = labelFor(t, selectedId!);
+            const { text, negative } = labelFor(t, effectiveSelectedId!);
             const amount = Number(t.amount).toFixed(2);
             return (
               <li key={t.transactionId} className="px-5 py-3 flex items-center justify-between">

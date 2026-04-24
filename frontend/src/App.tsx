@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import CompleteProfile from './pages/CompleteProfile';
 import CreateAccount from './pages/CreateAccount';
 import AccountDetail from './pages/AccountDetail';
+import AiHealth from './pages/AiHealth';
 import NotFound from './pages/NotFound';
 import './App.css';
 
@@ -68,6 +69,16 @@ function App() {
           <ProtectedRoute>
             <MainLayout>
               <AccountDetail />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai-health"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <AiHealth />
             </MainLayout>
           </ProtectedRoute>
         }

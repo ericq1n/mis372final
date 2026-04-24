@@ -21,6 +21,10 @@ DATABASE_URL = The full connection string for your PostgreSQL/RDS instance.DB_SC
 ASGARDEO_ORG = Your Asgardeo Organization name.
 PORT = The server port (Default: 5001).
 PGSSLMODE = Set to require for secure RDS connections.
+AZURE_FOUNDRY_ENDPOINT = Custom Microsoft Azure AI endpoint
+AZURE_FOUNDRY_KEY = AI endpoint key
+AZURE_FOUNDRY_DEPLOYMENT = gpt-4o, or other model
+AZURE_FOUNDRY_API_VERSION = 2024-12-01-preview, model details
 
 Frontend (/frontend/.env)
 VITE_API_BASE_URL = The URL of your deployed backend (or http://localhost:5001).VITE_ASGARDEO_CLIENT_ID = The Client ID from your Asgardeo Application.VITE_ASGARDEO_ORG = Your Asgardeo Organization name.
