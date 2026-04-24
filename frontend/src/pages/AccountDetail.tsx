@@ -4,6 +4,7 @@ import {
   closeAccount,
   getAccount,
   getAccounts,
+  updateAccount,
   type BankAccount,
 } from '../services/accountService';
 import {
@@ -31,6 +32,10 @@ export const AccountDetail: React.FC = () => {
 
   const [transferOpen, setTransferOpen] = useState(false);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [message, setMessage] = useState<{ tone: 'ok' | 'err'; text: string } | null>(null);
+  const [isSavingName, setIsSavingName] = useState(false);
 
   const load = useCallback(async () => {
     if (!accountId) return;
@@ -83,6 +88,28 @@ export const AccountDetail: React.FC = () => {
     await closeAccount(account.accountId);
     navigate('/dashboard');
   }, [account, navigate]);
+
+  const handleSaveName = useCallback(async () => {
+    if (!account || !newName.trim()) return;
+    setIsSavingName(true);
+    try {
+      await updateAccount(account.accountId, { accountName: newName.trim() });
+      await load();
+      setEditingName(false);
+      setNewName('');
+      setMessage({ tone: 'ok', text: '✓ Account name updated!' });
+      setTimeout(() => setMessage(null), 3000);
+    } catch (err) {
+      const apiMessage =
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      setMessage({
+        tone: 'err',
+        text: apiMessage || (err instanceof Error ? err.message : 'Failed to save name'),
+      });
+    } finally {
+      setIsSavingName(false);
+    }
+  }, [account, newName, load]);
 
   const typeLabel = useMemo(() => {
     if (!account) return '';
@@ -143,9 +170,46 @@ export const AccountDetail: React.FC = () => {
 
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {account.accountName || `${typeLabel} Account`}
-          </h1>
+          {editingName ? (
+            <div className="flex gap-2 items-center mb-2">
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder={account.accountName || `${typeLabel} Account`}
+                className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#CC5500]"
+                disabled={isSavingName}
+              />
+              <button
+                onClick={handleSaveName}
+                disabled={isSavingName || !newName.trim()}
+                className="bg-[#CC5500] hover:bg-[#b34600] text-white px-3 py-1 rounded-md text-sm font-medium transition disabled:opacity-50"
+              >
+                {isSavingName ? 'Saving...' : 'Save'}
+              </button>
+              <button
+                onClick={() => {
+                  setEditingName(false);
+                  setNewName('');
+                }}
+                disabled={isSavingName}
+                className="bg-white border border-gray-300 text-gray-800 hover:bg-gray-50 px-3 py-1 rounded-md text-sm font-medium transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setEditingName(true);
+                setNewName(account.accountName || '');
+              }}
+              className="text-2xl font-bold text-gray-900 hover:text-[#CC5500] transition flex items-center gap-2"
+            >
+              {account.accountName || `${typeLabel} Account`}
+              <span className="text-sm text-gray-400">✏️</span>
+            </button>
+          )}
           <p className="text-sm text-gray-500">Account #{account.accountNumber}</p>
         </div>
 
@@ -158,6 +222,18 @@ export const AccountDetail: React.FC = () => {
           </button>
         )}
       </div>
+
+      {message && (
+        <div
+          className={`text-sm rounded-md px-3 py-2 border mb-4 ${
+            message.tone === 'ok'
+              ? 'bg-green-50 text-green-700 border-green-200'
+              : 'bg-red-50 text-red-700 border-red-200'
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
 
       {!account.active && (
         <div className="mb-6 bg-gray-100 border border-gray-200 text-gray-700 rounded-md px-4 py-3 text-sm">
