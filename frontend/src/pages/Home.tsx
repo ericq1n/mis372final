@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@asgardeo/auth-react';
-import { useEffect } from 'react';
+import StrataWidget from '../components/StrataWidget';
 
 interface Feature {
   title: string;
@@ -44,53 +44,10 @@ export const Home: React.FC = () => {
   const { state, signIn } = useAuthContext();
   const isAuthed = !!state?.isAuthenticated;
 
-  // Strata Chat Widget — only active while the Home page is mounted.
-  useEffect(() => {
-    const addedToBody: Element[] = [];
-
-    const appendToBody = (el: Element) => {
-      document.body.appendChild(el);
-      addedToBody.push(el);
-    };
-
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        mutation.addedNodes.forEach((node) => {
-          if (node instanceof Element && !addedToBody.includes(node)) {
-            addedToBody.push(node);
-          }
-        });
-      }
-    });
-    observer.observe(document.body, { childList: true });
-
-    if (!document.getElementById('strata-widget-script')) {
-      const script = document.createElement('script');
-      script.src = 'https://strata.fyi/widget.js';
-      script.id = 'strata-widget-script';
-      appendToBody(script);
-    }
-
-    if (!document.getElementById('strata-widget-ui')) {
-      const chat = document.createElement('strata-chat');
-      chat.setAttribute('workspace', 'longhornbanking');
-      chat.setAttribute(
-        'icon-url',
-        'https://giving.utexas.edu/wp-content/uploads/2022/01/0_Texas-Longhorns-01.png'
-      );
-      chat.setAttribute('chat-title', 'Longhorn Banking');
-      chat.id = 'strata-widget-ui';
-      appendToBody(chat);
-    }
-
-    return () => {
-      observer.disconnect();
-      addedToBody.forEach((el) => el.remove());
-    };
-  }, []);
-
   return (
     <div>
+      <StrataWidget />
+
       {/* Hero */}
       <section className="bg-[#CC5500] text-white">
         <div className="max-w-6xl mx-auto px-6 py-20 text-center">

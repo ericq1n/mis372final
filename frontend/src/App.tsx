@@ -9,6 +9,9 @@ import CompleteProfile from './pages/CompleteProfile';
 import CreateAccount from './pages/CreateAccount';
 import AccountDetail from './pages/AccountDetail';
 import AiHealth from './pages/AiHealth';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Support from './pages/Support';
 import NotFound from './pages/NotFound';
 import './App.css';
 
@@ -81,6 +84,30 @@ function App() {
               <AiHealth />
             </MainLayout>
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/privacy"
+        element={
+          <MainLayout>
+            <Privacy />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/terms"
+        element={
+          <MainLayout>
+            <Terms />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/support"
+        element={
+          <MainLayout>
+            <Support />
+          </MainLayout>
         }
       />
       <Route
